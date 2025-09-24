@@ -1,0 +1,20 @@
+{
+  "name": "pricebook-asmp-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Append-only scan storage service for chunk-based shops.",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "NODE_ENV=production node server.js",
+    "db:reset": "node scripts/reset-db.js",
+    "db:seed": "node scripts/seed.js",
+    "db:rebuild-latest": "node scripts/rebuild-latest-shops.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "morgan": "^1.10.1"
+  }
+}
