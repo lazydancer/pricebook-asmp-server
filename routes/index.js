@@ -6,6 +6,8 @@ const registerItemRoutes = require('./items');
 const MIN_MOD_VERSION = '1.0.0';
 
 const registerRoutes = (app, ctx) => {
+  app.get('/healthz', (_req, res) => res.send('ok'));
+
   app.get('/v1/mod-version', (_req, res) => {
     res.json({ min_version: MIN_MOD_VERSION });
   });

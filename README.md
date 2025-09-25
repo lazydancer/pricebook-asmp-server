@@ -70,5 +70,20 @@ curl -X POST http://localhost:49876/api/scan-waystone \
 
 List the latest chunk coordinates with summary stats (includes chunks from active waystones even before they are chunk-scanned):
 ```bash
-curl "http://localhost:49876/api/chunks?limit=20"
+curl "http://localhost:49876/api/chunks"
 ```
+
+## Deployment
+
+### Docker
+1. Build the image: `docker build -t pricebook-asmp-server .`
+2. Run it locally: `sudo docker run --rm -p 49876:8080 -e DB_FILE=/data/asmp.db -v "$(pwd)/asmp.db:/data/asmp.db" pricebook-asmp-server`
+
+### Fly.io
+1. Install the Fly CLI and authenticate (`fly auth login`).
+2. Initialize the app (once): `fly launch --no-deploy --copy-config`
+   - When prompted, choose to use the existing `Dockerfile`, set the internal port to `8080`, and skip the database addon.
+3. Add a persistent volume for the SQLite database (optional but recommended): `fly volumes create data --size 1`
+   - Mount it by adding `[[mounts]]` with `source="data"` and `destination="/data"` to `fly.toml`, and set `DB_FILE=/data/asmp.db` via `fly secrets set`.
+4. Deploy: `fly deploy`
+5. Tail logs if needed: `fly logs`
