@@ -1,4 +1,3 @@
-const { randomUUID } = require('crypto');
 const { deriveChunkFromPosition } = require('../lib/chunk-utils');
 
 const ALLOWED_ACTIONS = new Set(['buy', 'sell', 'out of stock']);
@@ -162,8 +161,6 @@ const registerScanRoutes = (app, ctx) => {
         return res.status(400).json({ ok: false, error: 'chunkX and chunkZ must be numbers' });
       }
 
-      const scanId = body.scanId || randomUUID();
-
       const shopsRows = normalizedShops.map((shop) => {
         const derivedChunks = deriveChunkFromPosition([shop.posX, shop.posY, shop.posZ]);
         return {
@@ -189,12 +186,12 @@ const registerScanRoutes = (app, ctx) => {
       chunkX: waystone.chunkX,
       chunkZ: waystone.chunkZ,
       source: waystone.source
-    }));
+      }));
 
+      let scanId;
       try {
-        ctx.insertScanTx(
+        scanId = ctx.insertScanTx(
           {
-            scanId,
             senderId,
             dimension,
             chunkX,
@@ -206,7 +203,7 @@ const registerScanRoutes = (app, ctx) => {
         );
       } catch (err) {
         if (err && err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-          return res.status(409).json({ ok: false, error: 'scanId already exists' });
+          return res.status(409).json({ ok: false, error: 'duplicate scan data' });
         }
         throw err;
       }

@@ -1,5 +1,4 @@
 const dotenv = require('dotenv');
-const { randomUUID } = require('crypto');
 const { ensureLatestSchema, rebuildLatestShops, createLatestShopsAdapter } = require('../lib/latest-shops');
 const { ensureWaystoneLatestSchema, rebuildLatestWaystones, createLatestWaystonesAdapter } = require('../lib/latest-waystones');
 const { openDatabase } = require('../lib/db');
@@ -17,8 +16,8 @@ ensureWaystoneLatestSchema(db);
 db.pragma('foreign_keys = ON');
 
 const insertScan = db.prepare(`
-  INSERT INTO scans (scan_id, sender_id, dimension, chunk_x, chunk_z, scanned_at)
-  VALUES (?, ?, ?, ?, ?, ?)
+  INSERT INTO scans (sender_id, dimension, chunk_x, chunk_z, scanned_at)
+  VALUES (?, ?, ?, ?, ?)
 `);
 
 const insertShop = db.prepare(`
@@ -59,11 +58,11 @@ const now = new Date();
 const firstScanTime = now.toISOString();
 const secondScanTime = new Date(now.getTime() + 20 * 60 * 1000).toISOString();
 
-const firstScanId = randomUUID();
-const secondScanId = randomUUID();
+let firstScanId;
+let secondScanId;
 
 const seedTx = db.transaction(() => {
-  insertScan.run(firstScanId, 'seed-script', 'overworld', 7, 35, firstScanTime);
+  ({ lastInsertRowid: firstScanId } = insertScan.run('seed-script', 'overworld', 7, 35, firstScanTime));
   insertShop.run(
     firstScanId,
     'Alice',
@@ -94,7 +93,7 @@ const seedTx = db.transaction(() => {
     null
   );
 
-  insertScan.run(secondScanId, 'seed-script', 'overworld', 7, 35, secondScanTime);
+  ({ lastInsertRowid: secondScanId } = insertScan.run('seed-script', 'overworld', 7, 35, secondScanTime));
   insertWaystone.run(
     secondScanId,
     'overworld',

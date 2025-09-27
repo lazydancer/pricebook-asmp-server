@@ -15,7 +15,6 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
   "dimension": "overworld",             // optional if provided per shop
   "chunkX": 7,                           // optional; derived from first shop if omitted
   "chunkZ": 35,
-  "scanId": "uuid-string",              // optional; server generates if missing
   "shops": [
     {
       "owner": "Alice",
@@ -44,7 +43,7 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
 ```json
 {
   "ok": true,
-  "scanId": "uuid-string",
+  "scanId": 123,
   "dimension": "overworld",
   "chunkX": 7,
   "chunkZ": 35,
@@ -52,7 +51,7 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
   "observedWaystones": 1
 }
 ```
-- Error cases return `400` (validation) or `409` (duplicate `scanId`).
+- Error cases return `400` (validation) or `409` (duplicate data).
 
 ## POST /v1/scan-waystone
 Appends a single waystone observation captured when the UI opens. This endpoint enriches metadata (name/owner) without wiping chunk-level shop state. UI reports create or refresh entries in `latest_waystones`; chunk scans only remove waystones that go missing. The server records the receipt timestamp automatically.
@@ -74,7 +73,7 @@ Appends a single waystone observation captured when the UI opens. This endpoint 
 ```json
 {
   "ok": true,
-  "scanId": "uuid-string",
+  "scanId": 124,
   "dimension": "overworld",
   "chunkX": 8,
   "chunkZ": 35,
@@ -170,4 +169,5 @@ Returns a list of all items that have been observed in scans.
 ## Operational Notes
 - Database path defaults to `asmp.db`; configure with `DB_FILE` in `.env`.
 - Run `npm run db:reset` and `npm run db:seed` when bootstrapping local data for integration tests.
+- `scanId` is an auto-incrementing integer assigned by the server.
 - The API enforces unique `(scanId, dimension, owner, item, position)` per scan to prevent duplicate shop entries, and `(scanId, dimension, position)` per scan for waystones.

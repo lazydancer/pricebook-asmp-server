@@ -1,5 +1,3 @@
-const { randomUUID } = require('crypto');
-
 const registerWaystoneRoutes = (app, ctx) => {
   app.post('/v1/scan-waystone', (req, res) => {
     try {
@@ -47,7 +45,6 @@ const registerWaystoneRoutes = (app, ctx) => {
         return res.status(400).json({ ok: false, error: 'owner is required' });
       }
 
-      const scanId = randomUUID();
       const name = body.name === null ? null : String(body.name);
       const owner = body.owner === null ? null : String(body.owner);
 
@@ -65,10 +62,10 @@ const registerWaystoneRoutes = (app, ctx) => {
         }
       ];
 
+      let scanId;
       try {
-        ctx.insertScanTx(
+        scanId = ctx.insertScanTx(
           {
-            scanId,
             senderId,
             dimension,
             chunkX,
@@ -81,7 +78,7 @@ const registerWaystoneRoutes = (app, ctx) => {
         );
       } catch (err) {
         if (err && err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-          return res.status(409).json({ ok: false, error: 'scanId already exists' });
+          return res.status(409).json({ ok: false, error: 'duplicate scan data' });
         }
         throw err;
       }

@@ -9,7 +9,8 @@
     "start": "NODE_ENV=production node server.js",
     "db:reset": "node scripts/reset-db.js",
     "db:seed": "node scripts/seed.js",
-    "db:rebuild-latest": "node scripts/rebuild-latest-shops.js"
+    "db:rebuild-latest": "node scripts/rebuild-latest-shops.js",
+    "db:2025-09-27-migrate-scan-id": "node scripts/2025-09-27-migrate-scan-id.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
