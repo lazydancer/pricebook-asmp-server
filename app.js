@@ -15,6 +15,17 @@ const createApp = (ctx) => {
     next();
   });
 
+  app.use((req, res, next) => {
+    const rawValue = process.env.MAINTENANCE_MODE;
+    const enabled = rawValue && ['1', 'true', 'yes', 'on'].includes(String(rawValue).toLowerCase());
+    if (!enabled || req.path === '/healthz') {
+      return next();
+    }
+    res.set('Retry-After', '120');
+    console.warn(`[maintenance] ${req.method} ${req.originalUrl}`);
+    return res.status(503).json({ ok: false, error: 'Service temporarily unavailable due to maintenance' });
+  });
+
   registerRoutes(app, ctx);
 
   app.use((req, res) => {
