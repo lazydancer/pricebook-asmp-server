@@ -1,7 +1,5 @@
 const dotenv = require('dotenv');
 const { openDatabase } = require('../../lib/db');
-const { ensureLatestSchema } = require('../../lib/latest-shops');
-const { ensureWaystoneLatestSchema } = require('../../lib/latest-waystones');
 const { createContext } = require('../../lib/context');
 
 dotenv.config();
@@ -123,8 +121,6 @@ function typecheckTables() {
     db.pragma('foreign_keys = ON');
 
     console.log('Ensuring latest schema definitions...');
-    ensureWaystoneLatestSchema(db);
-    ensureLatestSchema(db);
 
     db.close();
 

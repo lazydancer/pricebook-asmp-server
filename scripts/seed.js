@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
-const { ensureLatestSchema, rebuildLatestShops, createLatestShopsAdapter } = require('../lib/latest-shops');
-const { ensureWaystoneLatestSchema, rebuildLatestWaystones, createLatestWaystonesAdapter } = require('../lib/latest-waystones');
+const { LATEST_SHOPS_DDL, rebuildLatestShops, createLatestShopsAdapter } = require('../lib/latest-shops');
+const { LATEST_WAYSTONES_DDL, rebuildLatestWaystones, createLatestWaystonesAdapter } = require('../lib/latest-waystones');
 const { openDatabase } = require('../lib/db');
 const { SCHEMA_DDL } = require('../lib/schema');
 
@@ -10,9 +10,8 @@ const DB_FILE = process.env.DB_FILE || 'asmp.db';
 
 const db = openDatabase(DB_FILE);
 db.exec(SCHEMA_DDL);
-ensureLatestSchema(db);
-ensureWaystoneLatestSchema(db);
-
+db.exec(LATEST_SHOPS_DDL);
+db.exec(LATEST_WAYSTONES_DDL);
 db.pragma('foreign_keys = ON');
 
 const insertScan = db.prepare(`
