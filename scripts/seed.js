@@ -3,6 +3,7 @@ const { LATEST_SHOPS_DDL, rebuildLatestShops, createLatestShopsAdapter } = requi
 const { LATEST_WAYSTONES_DDL, rebuildLatestWaystones, createLatestWaystonesAdapter } = require('../lib/latest-waystones');
 const { openDatabase } = require('../lib/db');
 const { SCHEMA_DDL } = require('../lib/schema');
+const { encodeDimension, encodeAction } = require('../lib/enums');
 
 dotenv.config();
 
@@ -63,7 +64,7 @@ let firstScanId;
 let secondScanId;
 
 const seedTx = db.transaction(() => {
-  ({ lastInsertRowid: firstScanId } = insertScan.run('seed-script', 'overworld', 7, 35, firstScanMs));
+  ({ lastInsertRowid: firstScanId } = insertScan.run('seed-script', encodeDimension('overworld'), 7, 35, firstScanMs));
   insertShop.run(
     firstScanId,
     'Alice',
@@ -71,17 +72,17 @@ const seedTx = db.transaction(() => {
     120,
     64,
     560,
-    'overworld',
+    encodeDimension('overworld'),
     32.0,
     3,
-    'out of stock',
+    encodeAction('out of stock'),
     7,
     35
   );
 
   insertWaystone.run(
     firstScanId,
-    'overworld',
+    encodeDimension('overworld'),
     128,
     70,
     560,
@@ -94,10 +95,10 @@ const seedTx = db.transaction(() => {
     null
   );
 
-  ({ lastInsertRowid: secondScanId } = insertScan.run('seed-script', 'overworld', 7, 35, secondScanMs));
+  ({ lastInsertRowid: secondScanId } = insertScan.run('seed-script', encodeDimension('overworld'), 7, 35, secondScanMs));
   insertWaystone.run(
     secondScanId,
-    'overworld',
+    encodeDimension('overworld'),
     128,
     70,
     560,
