@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
-const { rebuildLatestShops, ensureLatestSchema, createLatestShopsAdapter } = require('../lib/latest-shops');
-const { rebuildLatestWaystones, ensureWaystoneLatestSchema, createLatestWaystonesAdapter } = require('../lib/latest-waystones');
+const { rebuildLatestShops, createLatestShopsAdapter } = require('../lib/latest-shops');
+const { rebuildLatestWaystones, createLatestWaystonesAdapter} = require('../lib/latest-waystones');
 const { openDatabase } = require('../lib/db');
 
 dotenv.config();
@@ -8,8 +8,6 @@ dotenv.config();
 const DB_FILE = process.env.DB_FILE || 'asmp.db';
 
 const db = openDatabase(DB_FILE);
-ensureLatestSchema(db);
-ensureWaystoneLatestSchema(db);
 db.pragma('foreign_keys = ON');
 
 const shopInfo = rebuildLatestShops(db);
@@ -34,6 +32,7 @@ for (const position of positions) {
     position,
     nearest
       ? {
+          id: nearest.id,
           name: nearest.name || null,
           posX: nearest.posX,
           posY: nearest.posY,

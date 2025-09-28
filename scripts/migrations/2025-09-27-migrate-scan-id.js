@@ -1,8 +1,6 @@
 const dotenv = require('dotenv');
 const { openDatabase } = require('../../lib/db');
 const { SCHEMA_DDL } = require('../../lib/schema');
-const { ensureLatestSchema } = require('../../lib/latest-shops');
-const { ensureWaystoneLatestSchema } = require('../../lib/latest-waystones');
 
 dotenv.config();
 
@@ -280,8 +278,6 @@ try {
 
     // Re-create indexes and ensure auxiliary tables are up to date with the new schema.
     db.exec(SCHEMA_DDL);
-    ensureLatestSchema(db);
-    ensureWaystoneLatestSchema(db);
 
     // Compact the database file after the bulk rewrite.
     db.exec('VACUUM');
