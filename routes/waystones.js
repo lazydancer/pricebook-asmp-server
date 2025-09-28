@@ -1,3 +1,5 @@
+const { deriveChunkFromPosition } = require('../lib/chunk-utils');
+
 const registerWaystoneRoutes = (app, ctx) => {
   app.post('/v1/scan-waystone', (req, res) => {
     try {
@@ -24,16 +26,7 @@ const registerWaystoneRoutes = (app, ctx) => {
         return res.status(400).json({ ok: false, error: 'dimension is required' });
       }
 
-      if (body.chunkX === undefined || body.chunkZ === undefined) {
-        return res.status(400).json({ ok: false, error: 'chunkX and chunkZ are required' });
-      }
-
-      const chunkX = Math.trunc(Number(body.chunkX));
-      const chunkZ = Math.trunc(Number(body.chunkZ));
-
-      if (Number.isNaN(chunkX) || Number.isNaN(chunkZ)) {
-        return res.status(400).json({ ok: false, error: 'chunkX and chunkZ must be numbers' });
-      }
+      const { chunkX, chunkZ } = deriveChunkFromPosition([posX, posY, posZ]);
 
       const receivedAtIso = new Date().toISOString();
 
@@ -97,19 +90,8 @@ const registerWaystoneRoutes = (app, ctx) => {
 
       ctx.recomputeNearestForAllShops();
 
-      return res.status(201).json({
-        ok: true,
-        scanId,
-        dimension,
-        chunkX,
-        chunkZ,
-        observedWaystones: 1,
-        waystone: {
-          position: [posX, posY, posZ],
-          name: name !== undefined ? name : null,
-          owner: owner !== undefined ? owner : null
-        }
-      });
+      res.status(201).end();
+      return;
     } catch (err) {
       console.error(err);
       return res.status(400).json({ ok: false, error: err.message });

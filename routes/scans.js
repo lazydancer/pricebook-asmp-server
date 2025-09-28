@@ -4,11 +4,11 @@ const ALLOWED_ACTIONS = new Set(['buy', 'sell', 'out of stock']);
 
 const validateAction = (value, index) => {
   if (value === null || value === undefined) {
-    return null;
+    throw new Error(`shops[${index}].action is required`);
   }
 
   if (typeof value !== 'string') {
-    throw new Error(`shops[${index}].action must be a string when provided`);
+    throw new Error(`shops[${index}].action must be a string`);
   }
 
   if (!ALLOWED_ACTIONS.has(value)) {
@@ -208,15 +208,8 @@ const registerScanRoutes = (app, ctx) => {
         throw err;
       }
 
-      return res.status(201).json({
-        ok: true,
-        scanId,
-        dimension,
-        chunkX,
-        chunkZ,
-        observed: shopsRows.length,
-        observedWaystones: waystoneRows.length
-      });
+      res.status(201).end();
+      return;
     } catch (err) {
       console.error(err);
       return res.status(400).json({ ok: false, error: err.message });

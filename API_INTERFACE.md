@@ -23,7 +23,7 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
       "price": 32.0,                     // numeric
       "amount": 3,                       // integer count
       "dimension": "overworld",         // text (overworld, end or nether)
-      "action": "sell"                  // text (buy, sell, or out of stock)
+      "action": "sell"                  // required text (buy, sell, or out of stock)
     }
   ],
   "waystones": [
@@ -36,21 +36,10 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
 ```
 
 - `shops`/`waystones` may be empty to record "no shops/waystones observed".
-- Chunk scan waystones only send position (and optional dimension); metadata like name/owner arrives via `/api/scan-waystone`.
-- `action` is optional; when provided, the value must be exactly `buy`, `sell`, or `out of stock`.
+- Chunk scan waystones only send position (and optional dimension); metadata like name/owner arrives via `/v1/scan-waystone`.
+- `action` is required for every shop row and must be exactly `buy`, `sell`, or `out of stock`.
 - Positions are chunk-aligned: chunk is `floor(x/16)`, `floor(z/16)` when not supplied.
-- Server response: `201 Created` with
-```json
-{
-  "ok": true,
-  "scanId": 123,
-  "dimension": "overworld",
-  "chunkX": 7,
-  "chunkZ": 35,
-  "observed": 1,
-  "observedWaystones": 1
-}
-```
+- Server response: `201 Created` with an empty body when the scan is accepted.
 - Error cases return `400` (validation) or `409` (duplicate data).
 
 ## POST /v1/scan-waystone
@@ -62,68 +51,36 @@ Appends a single waystone observation captured when the UI opens. This endpoint 
   "senderId": "string",                 // required
   "dimension": "overworld",             // required
   "position": [128, 70, 560],            // required block coords
-  "chunkX": 8,                           // required chunk derived from position
-  "chunkZ": 35,                          // required chunk derived from position
   "name": "Spawn Hub",                  // required display name (use null if unknown)
   "owner": "Server Admin"               // required owner tag (use null if unknown)
 }
 ```
 
+- Chunk coordinates are derived server-side from the provided position.
+
 ### Response
-```json
-{
-  "ok": true,
-  "scanId": 124,
-  "dimension": "overworld",
-  "chunkX": 8,
-  "chunkZ": 35,
-  "observedWaystones": 1,
-  "waystone": {
-    "position": [128, 70, 560],
-    "name": "Spawn Hub",
-    "owner": "Server Admin"
-  }
-}
-```
+`201 Created` with an empty body when the observation is accepted.
 
 ## GET /v1/chunks
-Returns paged chunk coordinates with stored scans and summary stats for both shops and waystones. Chunks with active `latest_waystones` appear even if they have never been chunk-scanned (those entries will show `totalScans = 0`).
-
-Each latest shop record now carries `nearest_waystone_name`, `nearest_waystone_x/y/z`, and `nearest_waystone_distance_sq`, reflecting the closest active waystone when the server processed the observation. These fields surface in item-related responses.
+Returns the set of chunk coordinates known to the service. A chunk appears if it has ever been scanned or if an active waystone currently references it. The response has no pagination or filters.
 
 ### Response
 ```json
 {
   "chunks": [
-    {
-      "dimension": "overworld",
-      "chunkX": 7,
-      "chunkZ": 35,
-      "totalScans": 12,
-      "latestScannedAt": "2024-04-10T15:10:00.000Z",
-      "minutesSinceLastScan": 5,
-      "lastObservedCount": 2,
-      "everObservedDistinct": 5,
-      "lastObservedWaystones": 1,
-      "everObservedWaystones": 3
-    }
+    { "dimension": "overworld", "chunkX": 7, "chunkZ": 35 },
+    { "dimension": "nether", "chunkX": -2, "chunkZ": 18 }
   ]
 }
 ```
-
-Use `limit/offset` for pagination. Filtering happens server-side before pagination, so a large offset might lead to empty pages when filters exclude newer chunks. Additional filters: `minEverWaystones`, `hasWaystones=true|false`.
-
-Chunks surfaced only via `latest_waystones` report `totalScans = 0`, `latestScannedAt = null`, and `minutesSinceLastScan = null` until a chunk sweep runs.
-
-Item-oriented responses now include a `nearestWaystone` object (name, position, distanceSq) for each entry whenever an active waystone is available.
 
 ## GET /v1/item
 Returns pricing information for a specific item, including top sellers and buyers.
 
 ### Query Parameters
 - `item` (required): The item name to search for
-- `dimension` (optional): Filter results by dimension
-- `limit` (optional): Maximum results per category (default: 3, max: 10)
+
+The response includes up to three sellers and buyers (server default) and, when available, a `nearestWaystone.owner` value.
 
 ### Response
 ```json
@@ -141,6 +98,7 @@ Returns pricing information for a specific item, including top sellers and buyer
       "lastSeenAt": "2024-04-10T15:10:00.000Z",
       "nearestWaystone": {
         "name": "Spawn Hub",
+        "owner": "Server Admin",
         "position": [128, 70, 560],
         "distanceSq": 64
       }
