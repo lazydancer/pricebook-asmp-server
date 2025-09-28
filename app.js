@@ -2,7 +2,21 @@ const express = require('express');
 const morgan = require('morgan');
 const { registerRoutes } = require('./routes');
 
+const MAINTENANCE_SENTINELS = ['1', 'true', 'yes', 'on'];
+const isMaintenanceModeEnabled = () => {
+  const rawValue = process.env.MAINTENANCE_MODE;
+  if (!rawValue) {
+    return false;
+  }
+  return MAINTENANCE_SENTINELS.includes(String(rawValue).toLowerCase());
+};
+
 const createApp = (ctx) => {
+  if (isMaintenanceModeEnabled()) {
+    console.warn('[maintenance] MAINTENANCE_MODE enabled, shutting down before start');
+    process.exit(0);
+  }
+
   const app = express();
   app.use(express.json({ limit: '256kb' }));
   app.use(morgan('tiny'));
@@ -16,9 +30,7 @@ const createApp = (ctx) => {
   });
 
   app.use((req, res, next) => {
-    const rawValue = process.env.MAINTENANCE_MODE;
-    const enabled = rawValue && ['1', 'true', 'yes', 'on'].includes(String(rawValue).toLowerCase());
-    if (!enabled || req.path === '/healthz') {
+    if (!isMaintenanceModeEnabled() || req.path === '/healthz') {
       return next();
     }
     res.set('Retry-After', '120');

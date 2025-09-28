@@ -37,6 +37,3 @@ primary_region = 'yyz'
   grace_period = "5s"
   method = "GET"
   path = "/healthz"
-
-[deploy]
-  release_command = "node scripts/migrations/2025-09-28-migrate-nearest-waystone.js"
