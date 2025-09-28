@@ -53,15 +53,17 @@ const insertWaystone = db.prepare(`
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-const now = new Date();
-const firstScanTime = now.toISOString();
-const secondScanTime = new Date(now.getTime() + 20 * 60 * 1000).toISOString();
+const firstScanMs = Date.now();
+const secondScanMs = firstScanMs + 20 * 60 * 1000;
+
+const firstScanIso = new Date(firstScanMs).toISOString();
+const secondScanIso = new Date(secondScanMs).toISOString();
 
 let firstScanId;
 let secondScanId;
 
 const seedTx = db.transaction(() => {
-  ({ lastInsertRowid: firstScanId } = insertScan.run('seed-script', 'overworld', 7, 35, firstScanTime));
+  ({ lastInsertRowid: firstScanId } = insertScan.run('seed-script', 'overworld', 7, 35, firstScanMs));
   insertShop.run(
     firstScanId,
     'Alice',
@@ -86,13 +88,13 @@ const seedTx = db.transaction(() => {
     8,
     35,
     'seed-script',
-    firstScanTime,
+    firstScanMs,
     'chunk',
     null,
     null
   );
 
-  ({ lastInsertRowid: secondScanId } = insertScan.run('seed-script', 'overworld', 7, 35, secondScanTime));
+  ({ lastInsertRowid: secondScanId } = insertScan.run('seed-script', 'overworld', 7, 35, secondScanMs));
   insertWaystone.run(
     secondScanId,
     'overworld',
@@ -102,7 +104,7 @@ const seedTx = db.transaction(() => {
     8,
     35,
     'seed-script',
-    secondScanTime,
+    secondScanMs,
     'ui',
     'Spawn Hub',
     'Server Admin'
@@ -112,8 +114,8 @@ const seedTx = db.transaction(() => {
 seedTx();
 
 console.log('Seed data inserted:');
-console.log(`  Non-empty scan ${firstScanId} at ${firstScanTime}`);
-console.log(`  Empty scan ${secondScanId} at ${secondScanTime}`);
+console.log(`  Non-empty scan ${firstScanId} at ${firstScanIso}`);
+console.log(`  Empty scan ${secondScanId} at ${secondScanIso}`);
 
 const rebuildShopInfo = rebuildLatestShops(db);
 console.log('latest_shops rebuilt:', rebuildShopInfo);

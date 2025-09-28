@@ -127,7 +127,7 @@ const registerScanRoutes = (app, ctx) => {
       let chunkX = body.chunkX !== undefined ? Math.trunc(Number(body.chunkX)) : null;
       let chunkZ = body.chunkZ !== undefined ? Math.trunc(Number(body.chunkZ)) : null;
 
-      const scannedAtIso = new Date().toISOString();
+      const scannedAtMs = Date.now();
 
       const normalizedShops = normalizeShops(body.shops, dimension, chunkX, chunkZ);
       const normalizedWaystones = normalizeWaystones(body.waystones, dimension);
@@ -196,7 +196,7 @@ const registerScanRoutes = (app, ctx) => {
             dimension,
             chunkX,
             chunkZ,
-            scannedAt: scannedAtIso
+            scannedAt: scannedAtMs
           },
           shopsRows,
           waystoneRows

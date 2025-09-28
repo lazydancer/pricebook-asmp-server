@@ -1,4 +1,15 @@
 const registerItemRoutes = (app, ctx) => {
+  const msToIso = (value) => {
+    if (value === null || value === undefined) {
+      return null;
+    }
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return null;
+    }
+    return new Date(numeric).toISOString();
+  };
+
   app.get('/v1/item', (req, res) => {
     try {
       const itemParam = req.query.item ? String(req.query.item).trim() : '';
@@ -32,7 +43,7 @@ const registerItemRoutes = (app, ctx) => {
           amount: row.amount,
           coords: [row.pos_x, row.pos_y, row.pos_z],
           dimension: row.dimension,
-          lastSeenAt: row.observed_at,
+          lastSeenAt: msToIso(row.observed_at),
           nearestWaystone
         };
       };
@@ -41,7 +52,7 @@ const registerItemRoutes = (app, ctx) => {
       const topBuyers = buyersRows.map(shapeEntry);
 
       const latestObserved = ctx.latestShops.latestObserved({ item: itemParam, dimension: null });
-      const refreshedAt = latestObserved && latestObserved.latest_observed ? latestObserved.latest_observed : null;
+      const refreshedAt = latestObserved ? msToIso(latestObserved.latest_observed) : null;
 
       return res.json({
         ok: true,
@@ -60,7 +71,7 @@ const registerItemRoutes = (app, ctx) => {
     try {
       const rows = ctx.latestShops.listItems();
       const refreshed = ctx.latestShops.latestObservedAny();
-      const refreshedAt = refreshed && refreshed.latest_observed ? refreshed.latest_observed : new Date().toISOString();
+      const refreshedAt = refreshed ? msToIso(refreshed.latest_observed) : new Date().toISOString();
 
       return res.json({
         ok: true,

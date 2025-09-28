@@ -28,7 +28,7 @@ const registerWaystoneRoutes = (app, ctx) => {
 
       const { chunkX, chunkZ } = deriveChunkFromPosition([posX, posY, posZ]);
 
-      const receivedAtIso = new Date().toISOString();
+      const observedAtMs = Date.now();
 
       if (body.name === undefined) {
         return res.status(400).json({ ok: false, error: 'name is required' });
@@ -63,7 +63,7 @@ const registerWaystoneRoutes = (app, ctx) => {
             dimension,
             chunkX,
             chunkZ,
-            scannedAt: receivedAtIso
+            scannedAt: observedAtMs
           },
           [],
           waystoneRows,
@@ -85,7 +85,7 @@ const registerWaystoneRoutes = (app, ctx) => {
         chunkZ,
         name,
         owner,
-        observedAt: receivedAtIso
+        observedAt: observedAtMs
       });
 
       ctx.recomputeNearestForAllShops();
