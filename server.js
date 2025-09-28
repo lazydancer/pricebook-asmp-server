@@ -4,6 +4,11 @@ const { createApp } = require('./app');
 
 dotenv.config();
 
+if (process.env.MAINTENANCE_MODE === 'true') {
+  console.warn('[maintenance] MAINTENANCE_MODE enabled, exiting before startup');
+  process.exit(0);
+}
+
 const PORT = parseInt(process.env.PORT, 10) || 49876;
 const DB_FILE = process.env.DB_FILE || 'asmp.db';
 
