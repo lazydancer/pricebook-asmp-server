@@ -39,4 +39,4 @@ primary_region = 'yyz'
   path = "/healthz"
 
 [deploy]
-  release_command = "node scripts/migrations/2025-09-28-migrate-nearest_waystone.js"
+  release_command = "node scripts/migrations/2025-09-28-migrate-nearest-waystone.js"
