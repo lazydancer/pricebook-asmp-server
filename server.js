@@ -38,7 +38,7 @@ if (maintenanceMode) {
 } else {
   const ctx = createContext(DB_FILE);
   try {
-    ctx.recomputeNearestForAllShops();
+    ctx.recomputeNearest('all');
   } catch (err) {
     console.error('Failed to recompute nearest waystones on startup', err);
   }

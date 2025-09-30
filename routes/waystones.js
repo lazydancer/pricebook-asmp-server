@@ -88,7 +88,7 @@ const registerWaystoneRoutes = (app, ctx) => {
         observedAt: observedAtMs
       });
 
-      ctx.recomputeNearestForAllShops();
+      ctx.recomputeNearest('all');
 
       res.status(201).end();
       return;

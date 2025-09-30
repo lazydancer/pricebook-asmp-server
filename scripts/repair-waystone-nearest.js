@@ -41,7 +41,7 @@ const upsertTx = db.transaction(() => {
 upsertTx();
 
 const ctx = createContext(DB_FILE);
-ctx.recomputeNearestForAllShops();
+ctx.recomputeNearest('all');
 ctx.close();
 
 db.close();

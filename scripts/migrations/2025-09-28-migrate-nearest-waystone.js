@@ -126,7 +126,7 @@ function typecheckTables() {
 
     console.log('Recomputing nearest waystones for shops...');
     const ctx = createContext(DB_FILE);
-    ctx.recomputeNearestForAllShops();
+    ctx.recomputeNearest('all');
     ctx.close();
 
     console.log('Migration complete.');
