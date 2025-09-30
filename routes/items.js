@@ -19,12 +19,11 @@ const registerItemRoutes = (app, ctx) => {
 
       const params = {
         item: itemParam,
-        dimension: null,
         limit: 3
       };
 
-      const sellersRows = ctx.latestShops.topSellers(params);
-      const buyersRows = ctx.latestShops.topBuyers(params);
+      const sellersRows = ctx.shops.topSellers(params);
+      const buyersRows = ctx.shops.topBuyers(params);
 
       const shapeEntry = (row) => {
         const hasNearest = row.nearest_waystone_x !== null && row.nearest_waystone_x !== undefined;
@@ -51,7 +50,7 @@ const registerItemRoutes = (app, ctx) => {
       const topSellers = sellersRows.map(shapeEntry);
       const topBuyers = buyersRows.map(shapeEntry);
 
-      const latestObserved = ctx.latestShops.latestObserved({ item: itemParam, dimension: null });
+      const latestObserved = ctx.shops.latestObserved({ item: itemParam, dimension: null });
       const refreshedAt = latestObserved ? msToIso(latestObserved.latest_observed) : null;
 
       return res.json({
@@ -69,13 +68,10 @@ const registerItemRoutes = (app, ctx) => {
 
   app.get('/v1/items', (req, res) => {
     try {
-      const rows = ctx.latestShops.listItems();
-      const refreshed = ctx.latestShops.latestObservedAny();
-      const refreshedAt = refreshed ? msToIso(refreshed.latest_observed) : new Date().toISOString();
+      const rows = ctx.shops.listItems();
 
       return res.json({
         ok: true,
-        refreshedAt,
         items: rows.map((row) => ({ name: row.item }))
       });
     } catch (err) {

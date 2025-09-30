@@ -37,11 +37,6 @@ if (maintenanceMode) {
   process.on('SIGTERM', maintenanceShutdown);
 } else {
   const ctx = createContext(DB_FILE);
-  try {
-    ctx.recomputeNearest('all');
-  } catch (err) {
-    console.error('Failed to recompute nearest waystones on startup', err);
-  }
   const app = createApp(ctx);
 
   const server = app.listen(PORT, () => {

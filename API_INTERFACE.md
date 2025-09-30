@@ -43,7 +43,7 @@ Appends a single scan and its observed shops + chunk-level waystone sightings.
 - Error cases return `400` (validation) or `409` (duplicate data).
 
 ## POST /v1/scan-waystone
-Appends a single waystone observation captured when the UI opens. This endpoint enriches metadata (name/owner) without wiping chunk-level shop state. UI reports create or refresh entries in `latest_waystones`; chunk scans only remove waystones that go missing. The server records the receipt timestamp automatically.
+Appends a single waystone observation captured when the UI opens. This endpoint enriches metadata (name/owner) without wiping chunk-level shop state. UI reports create or refresh entries in the `waystones` table; chunk scans only mark waystones as historical when they disappear. The server records the receipt timestamp automatically.
 
 ### Request Body
 ```json
@@ -126,6 +126,6 @@ Returns a list of all items that have been observed in scans.
 
 ## Operational Notes
 - Database path defaults to `asmp.db`; configure with `DB_FILE` in `.env`.
-- Run `npm run db:reset` and `npm run db:seed` when bootstrapping local data for integration tests.
+- Run `npm run db:reset` to bootstrap an empty simplified schema before integration tests.
 - `scanId` is an auto-incrementing integer assigned by the server.
 - The API enforces unique `(scanId, dimension, owner, item, position)` per scan to prevent duplicate shop entries, and `(scanId, dimension, position)` per scan for waystones.

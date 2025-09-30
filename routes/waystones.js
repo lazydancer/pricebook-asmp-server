@@ -76,19 +76,6 @@ const registerWaystoneRoutes = (app, ctx) => {
         throw err;
       }
 
-      ctx.latestWaystones.upsertObservation({
-        dimension,
-        posX,
-        posY,
-        posZ,
-        chunkX,
-        chunkZ,
-        name,
-        owner,
-        observedAt: observedAtMs
-      });
-
-      ctx.recomputeNearest('all');
 
       res.status(201).end();
       return;

@@ -1,4 +1,4 @@
-const chunkKey = (dimension, chunkX, chunkZ) => `${dimension}|${chunkX}|${chunkZ}`;
+const { chunkKey } = require('../lib/chunk-utils');
 
 const registerChunkRoutes = (app, ctx) => {
   app.get('/v1/chunks', (req, res) => {

@@ -6,8 +6,8 @@ Append-only API for recording overworld shop + waystone scans and summarizing wa
 1. Install Node.js 18+ and npm.
 2. Install dependencies: `npm install`.
 3. Optional: configure `.env` with `PORT` and `DB_FILE` (defaults: 49876, `asmp.db`).
-4. Reset + seed: `npm run db:reset && npm run db:seed`.
-5. Upgrading an existing deployment? Run any required migrations from `scripts/migrations/`
+4. Reset the database: `npm run db:reset` (creates an empty simplified schema).
+5. Upgrading an existing deployment? Run the migration script: `node scripts/migrate-to-simplified.js`
 6. Launch the API: `npm run dev`.
 
 ## API Endpoints
