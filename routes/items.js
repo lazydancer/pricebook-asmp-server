@@ -66,6 +66,26 @@ const registerItemRoutes = (app, ctx) => {
     }
   });
 
+  app.get('/v1/item/history', (req, res) => {
+    try {
+      const itemParam = req.query.item ? String(req.query.item).trim() : '';
+      if (!itemParam) {
+        return res.status(400).json({ ok: false, error: 'item query param is required' });
+      }
+
+      const history = ctx.shops.getItemHistory({ item: itemParam });
+
+      return res.json({
+        ok: true,
+        item: itemParam,
+        history
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ ok: false, error: 'failed to fetch item history' });
+    }
+  });
+
   app.get('/v1/items', (req, res) => {
     try {
       const rows = ctx.shops.listItems();
